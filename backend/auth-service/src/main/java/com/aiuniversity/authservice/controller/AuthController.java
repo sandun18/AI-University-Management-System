@@ -10,6 +10,7 @@ import com.aiuniversity.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,5 +69,29 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(ex.getMessage());
         }
+    }
+
+    // ─── GET /api/auth/admin ──────────────────────────────────────────────────────
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> adminAccess() {
+        return ResponseEntity.ok("Admin access granted");
+    }
+
+    // ─── GET /api/auth/lecturer ───────────────────────────────────────────────────
+
+    @GetMapping("/lecturer")
+    @PreAuthorize("hasAnyRole('LECTURER', 'ADMIN')")
+    public ResponseEntity<String> lecturerAccess() {
+        return ResponseEntity.ok("Lecturer access granted");
+    }
+
+    // ─── GET /api/auth/student ────────────────────────────────────────────────────
+
+    @GetMapping("/student")
+    @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
+    public ResponseEntity<String> studentAccess() {
+        return ResponseEntity.ok("Student access granted");
     }
 }
