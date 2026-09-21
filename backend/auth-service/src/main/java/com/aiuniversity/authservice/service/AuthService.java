@@ -1,5 +1,6 @@
 package com.aiuniversity.authservice.service;
 
+import com.aiuniversity.authservice.dto.LoginRequest;
 import com.aiuniversity.authservice.dto.RegisterRequest;
 import com.aiuniversity.authservice.model.User;
 import com.aiuniversity.authservice.repository.UserRepository;
@@ -38,5 +39,19 @@ public class AuthService {
         user.setRole(request.getRole());
 
         return userRepository.save(user);
+    }
+
+    // ─── Login ────────────────────────────────────────────────────────────────────
+
+    public User login(LoginRequest request) {
+
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
+        return user;
     }
 }

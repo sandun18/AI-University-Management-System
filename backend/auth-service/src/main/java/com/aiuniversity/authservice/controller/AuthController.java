@@ -1,5 +1,7 @@
 package com.aiuniversity.authservice.controller;
 
+import com.aiuniversity.authservice.dto.LoginRequest;
+import com.aiuniversity.authservice.dto.LoginResponse;
 import com.aiuniversity.authservice.dto.RegisterRequest;
 import com.aiuniversity.authservice.dto.RegisterResponse;
 import com.aiuniversity.authservice.model.User;
@@ -44,6 +46,22 @@ public class AuthController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
+                    .body(ex.getMessage());
+        }
+    }
+
+    // ─── POST /api/auth/login ─────────────────────────────────────────────────────
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        try {
+            User user = authService.login(request);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(LoginResponse.from(user, "Login successful"));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
                     .body(ex.getMessage());
         }
     }
