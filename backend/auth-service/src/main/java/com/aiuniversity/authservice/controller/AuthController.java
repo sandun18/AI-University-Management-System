@@ -1,6 +1,15 @@
 package com.aiuniversity.authservice.controller;
 
+import com.aiuniversity.authservice.dto.RegisterRequest;
+import com.aiuniversity.authservice.dto.RegisterResponse;
+import com.aiuniversity.authservice.model.User;
+import com.aiuniversity.authservice.service.AuthService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,9 +17,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthService authService;
+
+    // ─── Constructor Injection ────────────────────────────────────────────────────
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    // ─── GET /api/auth/health ─────────────────────────────────────────────────────
+
     @GetMapping("/health")
     public String health() {
         return "Auth Service is running";
     }
 
+    // ─── POST /api/auth/register ──────────────────────────────────────────────────
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        try {
+            User savedUser = authService.register(request);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(RegisterResponse.from(savedUser));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ex.getMessage());
+        }
+    }
 }
