@@ -5,6 +5,7 @@ import com.aiuniversity.authservice.dto.LoginResponse;
 import com.aiuniversity.authservice.dto.RegisterRequest;
 import com.aiuniversity.authservice.dto.RegisterResponse;
 import com.aiuniversity.authservice.model.User;
+import com.aiuniversity.authservice.security.JwtService;
 import com.aiuniversity.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtService jwtService;
 
     // ─── Constructor Injection ────────────────────────────────────────────────────
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, JwtService jwtService) {
         this.authService = authService;
+        this.jwtService = jwtService;
     }
 
     // ─── GET /api/auth/health ─────────────────────────────────────────────────────
@@ -56,9 +59,10 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             User user = authService.login(request);
+            String token = jwtService.generateToken(user);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(LoginResponse.from(user, "Login successful"));
+                    .body(LoginResponse.from(user, "Login successful", token));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
