@@ -45,7 +45,7 @@ public class StudentResponse {
         response.degreeProgram = student.getDegreeProgram();
         response.yearOfStudy   = student.getYearOfStudy();
         response.semester      = student.getSemester();
-        response.status        = student.getStatus();
+        response.status        = student.getStatus() != null ? student.getStatus().name() : null;
         response.createdAt     = student.getCreatedAt();
         response.updatedAt     = student.getUpdatedAt();
         return response;

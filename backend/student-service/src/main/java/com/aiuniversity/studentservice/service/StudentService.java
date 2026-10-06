@@ -2,6 +2,7 @@ package com.aiuniversity.studentservice.service;
 
 import com.aiuniversity.studentservice.dto.StudentRequest;
 import com.aiuniversity.studentservice.model.Student;
+import com.aiuniversity.studentservice.model.StudentStatus;
 import com.aiuniversity.studentservice.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +45,8 @@ public class StudentService {
         student.setYearOfStudy(request.getYearOfStudy());
         student.setSemester(request.getSemester());
         student.setStatus(request.getStatus() != null && !request.getStatus().isBlank()
-                ? request.getStatus()
-                : "ACTIVE");
+                ? StudentStatus.fromString(request.getStatus())
+                : StudentStatus.ACTIVE);
 
         return studentRepository.save(student);
     }
@@ -86,6 +87,10 @@ public class StudentService {
     // ─── Get Students By Status ───────────────────────────────────────────────────
 
     public List<Student> getStudentsByStatus(String status) {
+        return studentRepository.findByStatus(StudentStatus.fromString(status));
+    }
+
+    public List<Student> getStudentsByStatus(StudentStatus status) {
         return studentRepository.findByStatus(status);
     }
 
@@ -122,7 +127,7 @@ public class StudentService {
         student.setYearOfStudy(request.getYearOfStudy());
         student.setSemester(request.getSemester());
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            student.setStatus(request.getStatus());
+            student.setStatus(StudentStatus.fromString(request.getStatus()));
         }
 
         return studentRepository.save(student);
@@ -131,6 +136,12 @@ public class StudentService {
     // ─── Update Student Status ────────────────────────────────────────────────────
 
     public Student updateStudentStatus(Long id, String status) {
+        Student student = getStudentById(id);
+        student.setStatus(StudentStatus.fromString(status));
+        return studentRepository.save(student);
+    }
+
+    public Student updateStudentStatus(Long id, StudentStatus status) {
         Student student = getStudentById(id);
         student.setStatus(status);
         return studentRepository.save(student);

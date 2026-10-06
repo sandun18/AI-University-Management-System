@@ -1,6 +1,7 @@
 package com.aiuniversity.studentservice.repository;
 
 import com.aiuniversity.studentservice.model.Student;
+import com.aiuniversity.studentservice.model.StudentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     List<Student> findByDegreeProgram(String degreeProgram);
 
-    List<Student> findByStatus(String status);
+    List<Student> findByStatus(StudentStatus status);
 
     List<Student> findByDepartmentAndYearOfStudy(String department, Integer yearOfStudy);
 }
